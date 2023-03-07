@@ -1,4 +1,7 @@
+using System;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 
 namespace SysProg_Lesson2_hw
 {
@@ -9,12 +12,13 @@ namespace SysProg_Lesson2_hw
             InitializeComponent();
 
             thread = new(CopyMethod);
+            FromPath = "";
+            ToPath = "";
         }
 
         private Thread thread;
         public string FromPath { get; set; }
         public string ToPath { get; set; }
-        private bool isStopped = false;
 
         private void btn_from_Click(object sender, EventArgs e)
         {
@@ -46,29 +50,33 @@ namespace SysProg_Lesson2_hw
         {
             progBar.Value = 0;
 
-            using (FileStream fsRead = new FileStream(FromPath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, true))
+            using FileStream fsRead = new(FromPath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, true);
+            using FileStream fsWrite = new(ToPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+
+            var fileSize = fsRead.Length;
+            byte[] buffer = new byte[70];
+            var copiedBytes = 0L;
+
+            do
             {
-                using (FileStream fsWrite = new FileStream(ToPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                var bytesToCopy = Math.Min(buffer.Length, (int)(fileSize - copiedBytes));
+
+                fsRead.Read(buffer, 0, bytesToCopy);
+                fsWrite.Write(buffer, 0, bytesToCopy);
+                copiedBytes += bytesToCopy;
+
+                IDisposable unsubscribe = Disposables.DoNothing;
+                EventHandler handler = (ss, ee) =>
                 {
-                    var fileSize = fsRead.Length;
-                    byte[] buffer = new byte[100];
-                    var copiedBytes = 0L;
+                    Control.Invoke(() => { progBar.Value += 10; });
+                    unsubscribe.Dispose();
+                };
 
-                    do
-                    {
-                        var bytesToCopy = Math.Min(buffer.Length, (int)(fileSize - copiedBytes));
+                //progBar.Value += 10;
 
-                        fsRead.Read(buffer, 0, bytesToCopy);
-                        fsWrite.Write(buffer, 0, bytesToCopy);
+                Thread.Sleep(300 + Random.Shared.Next(30, 200));
+            } while (copiedBytes < fileSize);
 
-                        copiedBytes += bytesToCopy;
-                        progBar.Value += (int)(100 / buffer.Length);
-
-                        Thread.Sleep(300 + Random.Shared.Next(30, 200));
-                    } while (copiedBytes < fileSize);
-
-                }
-            }
             btn_copy.Enabled = true;
         }
 
@@ -94,32 +102,16 @@ namespace SysProg_Lesson2_hw
             thread.Start();
         }
 
-        private void btn_pauseResume_Click(object sender, EventArgs e)
-        {
-            if (thread.ThreadState == ThreadState.Unstarted)
-                return;
-
-            isStopped = !isStopped;
-
-            if (isStopped)
-            {
-                btn_pauseResume.Text = "Resume";
-                thread.Suspend();
-
-            }
-            else
-            {
-                btn_pauseResume.Text = "Pause";
-                thread.Resume();
-            }
-        }
-
         private void btn_cancel_Click(object sender, EventArgs e)
         {
             if (thread.ThreadState == ThreadState.Unstarted)
                 return;
 
-            thread.Abort();
+            try
+            {
+                thread.Abort();
+            }
+            catch (Exception ex) { }
 
             if (File.Exists(ToPath))
                 File.Delete(FromPath);

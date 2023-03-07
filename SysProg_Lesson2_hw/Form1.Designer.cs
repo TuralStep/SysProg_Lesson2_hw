@@ -37,7 +37,6 @@
             this.progBar = new System.Windows.Forms.ProgressBar();
             this.btn_copy = new System.Windows.Forms.Button();
             this.btn_cancel = new System.Windows.Forms.Button();
-            this.btn_pauseResume = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -98,7 +97,7 @@
             // 
             this.progBar.Location = new System.Drawing.Point(12, 67);
             this.progBar.Name = "progBar";
-            this.progBar.Size = new System.Drawing.Size(313, 23);
+            this.progBar.Size = new System.Drawing.Size(378, 23);
             this.progBar.TabIndex = 7;
             // 
             // btn_copy
@@ -121,22 +120,11 @@
             this.btn_cancel.UseVisualStyleBackColor = true;
             this.btn_cancel.Click += new System.EventHandler(this.btn_cancel_Click);
             // 
-            // btn_pauseResume
-            // 
-            this.btn_pauseResume.Location = new System.Drawing.Point(331, 67);
-            this.btn_pauseResume.Name = "btn_pauseResume";
-            this.btn_pauseResume.Size = new System.Drawing.Size(59, 23);
-            this.btn_pauseResume.TabIndex = 10;
-            this.btn_pauseResume.Text = "Pause";
-            this.btn_pauseResume.UseVisualStyleBackColor = true;
-            this.btn_pauseResume.Click += new System.EventHandler(this.btn_pauseResume_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(551, 100);
-            this.Controls.Add(this.btn_pauseResume);
             this.Controls.Add(this.btn_cancel);
             this.Controls.Add(this.btn_copy);
             this.Controls.Add(this.progBar);
@@ -164,6 +152,5 @@
         private ProgressBar progBar;
         private Button btn_copy;
         private Button btn_cancel;
-        private Button btn_pauseResume;
     }
 }
