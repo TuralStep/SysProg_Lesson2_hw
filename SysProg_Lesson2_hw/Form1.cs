@@ -48,7 +48,7 @@ namespace SysProg_Lesson2_hw
 
         private void CopyMethod()
         {
-            progBar.Value = 0;
+            
 
             using FileStream fsRead = new(FromPath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, true);
             using FileStream fsWrite = new(ToPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
@@ -64,15 +64,6 @@ namespace SysProg_Lesson2_hw
                 fsRead.Read(buffer, 0, bytesToCopy);
                 fsWrite.Write(buffer, 0, bytesToCopy);
                 copiedBytes += bytesToCopy;
-
-                IDisposable unsubscribe = Disposables.DoNothing;
-                EventHandler handler = (ss, ee) =>
-                {
-                    Control.Invoke(() => { progBar.Value += 10; });
-                    unsubscribe.Dispose();
-                };
-
-                //progBar.Value += 10;
 
                 Thread.Sleep(300 + Random.Shared.Next(30, 200));
             } while (copiedBytes < fileSize);
